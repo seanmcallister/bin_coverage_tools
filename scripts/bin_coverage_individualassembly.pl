@@ -48,11 +48,9 @@ my @cov_data = <IN2>; close(IN2); shift (@cov_data);
 foreach my $line (@cov_data)
     {   chomp($line);
         my @data = split('\t', $line);
-        foreach my $i (sort keys %Sequences)
-            {   if ($Sequences{$i}{'HEAD'} eq $data[0])
-                    {   $Sequences{$i}{'COV'} = $data[2];
-                        $Sequences{$i}{'COV_Len'} = $data[1];
-                    }
+        if (exists $Sequences{$data[0]})
+            {	$Sequences{$data[0]}{'COV'} = $data[2];
+                $Sequences{$data[0]}{'COV_Len'} = $data[1];
             }
     }
 
@@ -101,24 +99,24 @@ sub FASTAread
 	open(IN, "<".$path."/".$infile) or die "\n\nNADA $path/$infile you FOOL!!!\n\n";
 	my @DATA = <IN>; close(IN); shift(@DATA);	
 	# 2. Parse sequence data . . . . . . . . . . . . .
-	my $unid = $filenumber.10000001;                           # string to generate unique ids
+	#my $unid = $filenumber.10000001;                           # string to generate unique ids
 	foreach my $entry (@DATA)
 	{	my @data = split('\n', $entry);
 		#my $seq = '';
 		#foreach my $i (1..$#data)
 		#{	$seq .= $data[$i];  }
 		#$seq =~ s/>//;
-		$Sequences{$unid}{'HEAD'}    = $data[0];       # store header
+		$Sequences{$data[0]}{'HEAD'}    = $data[0];       # store header
 		my @shorthead = split(' ', $data[0]);
-		$Sequences{$unid}{'SHORT_HEAD'} = $shorthead[0];
+		$Sequences{$data[0]}{'SHORT_HEAD'} = $shorthead[0];
 		#$Sequences{$unid}{'gappy-ntseq'}   = uc($seq);       # store aligned sequence
 		#$Sequences{$unid}{'SIZE'}    = length($seq);   # store length
 		#$seq =~ s/\.//;
                 #$seq =~ s/\-//;
                 #$Sequences{$unid}{'degapped-ntseq'} = uc($seq);     # store degapped sequence
-                $Sequences{$unid}{'filenumber'} = $filenumber;
-                $Sequences{$unid}{'filename'} = $infile;
-                $unid += 1;
+                $Sequences{$data[0]}{'filenumber'} = $filenumber;
+                $Sequences{$data[0]}{'filename'} = $infile;
+                #$unid += 1;
 	}
 	$/="\n";
 }
